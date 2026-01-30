@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation</title>
+    <meta name="description" content="TransNormal: A novel framework for transparent object normal estimation using DINOv3 dense visual semantics and wavelet-based regularization.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="TransNormal: Transparent Object Normal Estimation">
+    <meta property="og:description" content="State-of-the-art normal estimation for transparent objects using diffusion priors and dense visual semantics.">
+    <meta property="og:type" content="website">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">TransNormal</a>
+            <ul class="nav-links">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#method">Method</a></li>
+                <li><a href="#results">Results</a></li>
+                <li><a href="#dataset">Dataset</a></li>
+                <li><a href="#citation">Citation</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-header">
+                <h1 class="hero-title"><span class="hero-title-main">TransNormal</span><span class="hero-separator">:</span><span class="hero-subtitle">Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation</span></h1>
+            </div>
+
+            <div class="authors">
+                <span class="author"><a href="https://github.com/longxiang-ai" target="_blank" rel="noopener noreferrer">Mingwei Li<sup>1,2</sup></a></span>
+                <span class="author"><a href="https://hehefan.github.io/" target="_blank" rel="noopener noreferrer">Hehe Fan<sup>1</sup></a></span>
+                <span class="author"><a href="https://scholar.google.com/citations?user=RMSuNFwAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Yi Yang<sup>1</sup></a></span>
+            </div>
+            <div class="affiliations">
+                <span><sup>1</sup>Zhejiang University</span>
+                <span><sup>2</sup>Zhongguancun Academy</span>
+            </div>
+
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Paper
+                </a>
+                <a href="https://github.com/longxiang-ai/TransNormal" class="btn btn-secondary disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true">
+                    <i class="fab fa-github"></i> Code <span class="badge">Coming Soon</span>
+                </a>
+                <a href="#dataset" class="btn btn-secondary">
+                    <i class="fas fa-database"></i> Dataset
+                </a>
+            </div>
+
+            <!-- Teaser integrated into hero -->
+            <div class="hero-teaser">
+                <div class="teaser-image">
+                    <img src="assets/images/teaser.png" alt="TransNormal Teaser - Comparison with baseline methods">
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Results Highlight -->
+        <div class="hero-highlights">
+            <div class="highlight-card">
+                <span class="highlight-value">24.4%</span>
+                <span class="highlight-label">Error Reduction on ClearGrasp</span>
+            </div>
+            <div class="highlight-card">
+                <span class="highlight-value">15.2%</span>
+                <span class="highlight-label">Error Reduction on ClearPose</span>
+            </div>
+            <div class="highlight-card">
+                <span class="highlight-value">1-Step</span>
+                <span class="highlight-label">Single Forward Pass</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Abstract Section -->
+    <section id="abstract" class="section">
+        <div class="container">
+            <h2 class="section-title">Abstract</h2>
+            <div class="abstract-content">
+                <p>
+                    Monocular normal estimation for transparent objects is critical for laboratory automation, yet it remains challenging due to complex light refraction and reflection. These optical properties often lead to catastrophic failures in conventional depth and normal sensors, hindering the deployment of embodied AI in scientific environments.
+                </p>
+                <p>
+                    We propose <strong>TransNormal</strong>, a novel framework that adapts pre-trained diffusion priors for single-step normal regression. To handle the lack of texture in transparent surfaces, TransNormal integrates <strong>dense visual semantics from DINOv3</strong> via a cross-attention mechanism, providing strong geometric cues. Furthermore, we employ a multi-task learning objective and <strong>wavelet-based regularization</strong> to ensure the preservation of fine-grained structural details.
+                </p>
+                <p>
+                    To support this task, we introduce <strong>TransNormal-Synthetic</strong>, a physics-based dataset with high-fidelity normal maps for transparent labware. Extensive experiments demonstrate that TransNormal significantly outperforms state-of-the-art methods across multiple benchmarks.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Method Section -->
+    <section id="method" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Method Overview</h2>
+
+            <div class="pipeline-image">
+                <img src="assets/images/pipeline.png" alt="TransNormal Pipeline">
+            </div>
+
+            <div class="method-highlights">
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>DINOv3 Visual Semantics</h3>
+                    <p>Replace sparse text conditioning with dense visual features from DINOv3, providing material-aware geometric guidance through cross-attention.</p>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Single-Step Prediction</h3>
+                    <p>Directly predict normal maps in a single forward pass, eliminating the iterative denoising process while maintaining high quality.</p>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <h3>Wavelet Regularization</h3>
+                    <p>Edge-aware frequency supervision preserves sharp boundary reconstruction while maintaining smooth interior surfaces.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="section">
+        <div class="container">
+            <h2 class="section-title">Results</h2>
+
+            <!-- Quantitative Results Table -->
+            <div class="results-table-wrapper">
+                <h3 class="subsection-title">Quantitative Comparison</h3>
+                <p class="table-desc">Quantitative comparison on transparent object normal estimation. Metrics: Mean angular error (lower is better) and percentage within thresholds (higher is better). The best, second best, and third best results are highlighted. <sup>*</sup> diffusion-based; <sup>†</sup> transformer-based. SA: SIGGRAPH Asia.</p>
+
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Method</th>
+                                <th rowspan="2">Venue</th>
+                                <th colspan="3">ClearGrasp (Synthetic)</th>
+                                <th colspan="3">TransNormal-Synthetic</th>
+                                <th colspan="3">ClearPose (Real-World)</th>
+                                <th>Avg.</th>
+                            </tr>
+                            <tr>
+                                <th>Mean↓</th>
+                                <th>11.25°↑</th>
+                                <th>30°↑</th>
+                                <th>Mean↓</th>
+                                <th>11.25°↑</th>
+                                <th>30°↑</th>
+                                <th>Mean↓</th>
+                                <th>11.25°↑</th>
+                                <th>30°↑</th>
+                                <th>Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Omnidata</td>
+                                <td>ICCV'21</td>
+                                <td>36.9</td>
+                                <td>15.1</td>
+                                <td>49.1</td>
+                                <td>11.3</td>
+                                <td>80.9</td>
+                                <td>89.3</td>
+                                <td>48.3</td>
+                                <td>10.8</td>
+                                <td>33.8</td>
+                                <td>12.3</td>
+                            </tr>
+                            <tr>
+                                <td>Omnidata V2<sup>†</sup></td>
+                                <td>CVPR'22</td>
+                                <td>33.8</td>
+                                <td>18.3</td>
+                                <td>55.9</td>
+                                <td>8.2</td>
+                                <td>87.0</td>
+                                <td>92.6</td>
+                                <td>51.7</td>
+                                <td>13.8</td>
+                                <td>33.2</td>
+                                <td>10.9</td>
+                            </tr>
+                            <tr>
+                                <td>GeoWizard<sup>*</sup></td>
+                                <td>ECCV'24</td>
+                                <td>31.3</td>
+                                <td>20.8</td>
+                                <td>59.5</td>
+                                <td>9.4</td>
+                                <td>78.9</td>
+                                <td>95.0</td>
+                                <td>36.8</td>
+                                <td>14.2</td>
+                                <td>49.7</td>
+                                <td>10.1</td>
+                            </tr>
+                            <tr>
+                                <td>StableNormal<sup>*</sup></td>
+                                <td>SA'24</td>
+                                <td>32.0</td>
+                                <td>17.5</td>
+                                <td>65.3</td>
+                                <td>7.6</td>
+                                <td>86.8</td>
+                                <td>96.3</td>
+                                <td>37.1</td>
+                                <td>14.1</td>
+                                <td>57.5</td>
+                                <td>8.9</td>
+                            </tr>
+                            <tr>
+                                <td>Marigold<sup>*</sup></td>
+                                <td>CVPR'24</td>
+                                <td>27.6</td>
+                                <td>31.0</td>
+                                <td>65.3</td>
+                                <td class="third">6.2</td>
+                                <td class="third">90.4</td>
+                                <td>96.3</td>
+                                <td>33.0</td>
+                                <td>25.5</td>
+                                <td>57.5</td>
+                                <td>6.3</td>
+                            </tr>
+                            <tr>
+                                <td>DSINE</td>
+                                <td>CVPR'24</td>
+                                <td>25.7</td>
+                                <td>26.4</td>
+                                <td>68.6</td>
+                                <td>13.2</td>
+                                <td>70.3</td>
+                                <td>90.7</td>
+                                <td>40.2</td>
+                                <td>15.9</td>
+                                <td>46.3</td>
+                                <td>9.6</td>
+                            </tr>
+                            <tr>
+                                <td>Diff-E2E-FT<sup>*</sup></td>
+                                <td>WACV'25</td>
+                                <td>22.6</td>
+                                <td class="second">42.1</td>
+                                <td>73.3</td>
+                                <td class="second">5.2</td>
+                                <td class="second">91.9</td>
+                                <td>97.0</td>
+                                <td>32.0</td>
+                                <td class="third">32.5</td>
+                                <td>59.4</td>
+                                <td class="second">3.3</td>
+                            </tr>
+                            <tr>
+                                <td>GenPercept<sup>*</sup></td>
+                                <td>ICLR'25</td>
+                                <td>25.8</td>
+                                <td>30.3</td>
+                                <td>70.9</td>
+                                <td>6.9</td>
+                                <td>87.6</td>
+                                <td>97.0</td>
+                                <td>31.6</td>
+                                <td>31.2</td>
+                                <td class="third">63.0</td>
+                                <td class="third">4.2</td>
+                            </tr>
+                            <tr>
+                                <td>Lotus-G<sup>*</sup></td>
+                                <td>ICLR'25</td>
+                                <td class="second">21.7</td>
+                                <td class="third">39.7</td>
+                                <td class="third">75.4</td>
+                                <td>8.2</td>
+                                <td>82.3</td>
+                                <td>96.7</td>
+                                <td>31.8</td>
+                                <td>28.8</td>
+                                <td>60.4</td>
+                                <td>5.2</td>
+                            </tr>
+                            <tr>
+                                <td>Lotus-D<sup>*</sup></td>
+                                <td>ICLR'25</td>
+                                <td class="third">21.9</td>
+                                <td>37.0</td>
+                                <td class="second">75.7</td>
+                                <td>9.0</td>
+                                <td>80.9</td>
+                                <td class="third">97.1</td>
+                                <td class="third">31.3</td>
+                                <td>23.2</td>
+                                <td>59.5</td>
+                                <td>5.3</td>
+                            </tr>
+                            <tr>
+                                <td>MoGe-2<sup>†</sup></td>
+                                <td>NeurIPS'25</td>
+                                <td>26.6</td>
+                                <td>17.0</td>
+                                <td>64.2</td>
+                                <td class="third">6.2</td>
+                                <td>90.1</td>
+                                <td>96.8</td>
+                                <td>36.2</td>
+                                <td>14.3</td>
+                                <td>48.3</td>
+                                <td>7.8</td>
+                            </tr>
+                            <tr>
+                                <td>Diception<sup>*</sup></td>
+                                <td>NeurIPS'25</td>
+                                <td>29.5</td>
+                                <td>25.8</td>
+                                <td>65.3</td>
+                                <td>7.1</td>
+                                <td>88.3</td>
+                                <td class="second">97.3</td>
+                                <td class="second">31.0</td>
+                                <td class="second">33.8</td>
+                                <td class="second">63.5</td>
+                                <td>5.0</td>
+                            </tr>
+                            <tr class="ours">
+                                <td><strong>TransNormal (Ours)</strong></td>
+                                <td>-</td>
+                                <td class="best"><strong>16.4</strong></td>
+                                <td class="best"><strong>51.7</strong></td>
+                                <td class="best"><strong>85.0</strong></td>
+                                <td class="best"><strong>4.1</strong></td>
+                                <td class="best"><strong>93.5</strong></td>
+                                <td class="best"><strong>98.2</strong></td>
+                                <td class="best"><strong>26.3</strong></td>
+                                <td class="best"><strong>35.9</strong></td>
+                                <td class="best"><strong>69.8</strong></td>
+                                <td class="best"><strong>1.0</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Qualitative Comparison -->
+            <div class="qualitative-section">
+                <h3 class="subsection-title">Qualitative Comparison</h3>
+                <p class="subsection-desc">Visual comparison with state-of-the-art methods on transparent object normal estimation.</p>
+
+                <!-- Image Comparison Slider -->
+                <div class="comparison-gallery">
+                    <div class="comparison-row comparison-row-3">
+                        <div class="comparison-tile">
+                            <div class="comparison-triple-container" data-min-gap="10">
+                                <img src="assets/images/results/comparison1_input.png" alt="Input" class="img-input">
+                                <img src="assets/images/results/comparison1_baseline_lotus.png" alt="Lotus-D" class="img-baseline">
+                                <img src="assets/images/results/comparison1_ours.png" alt="Ours" class="img-ours">
+                                <div class="slider-handle slider-handle-left">
+                                    <div class="handle-line"></div>
+                                    <div class="handle-circle">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div class="handle-line"></div>
+                                </div>
+                                <div class="slider-handle slider-handle-right">
+                                    <div class="handle-line"></div>
+                                    <div class="handle-circle">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div class="handle-line"></div>
+                                </div>
+                            </div>
+                            <div class="comparison-labels">
+                                <span class="label-left">Input</span>
+                                <span class="label-center">Lotus-D</span>
+                                <span class="label-right">Ours</span>
+                            </div>
+                        </div>
+                        <div class="comparison-tile">
+                            <div class="comparison-triple-container" data-min-gap="10">
+                                <img src="assets/images/results/comparison1_input.png" alt="Input" class="img-input">
+                                <img src="assets/images/results/comparison1_baseline_moge.png" alt="MoGe-2" class="img-baseline">
+                                <img src="assets/images/results/comparison1_ours.png" alt="Ours" class="img-ours">
+                                <div class="slider-handle slider-handle-left">
+                                    <div class="handle-line"></div>
+                                    <div class="handle-circle">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div class="handle-line"></div>
+                                </div>
+                                <div class="slider-handle slider-handle-right">
+                                    <div class="handle-line"></div>
+                                    <div class="handle-circle">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div class="handle-line"></div>
+                                </div>
+                            </div>
+                            <div class="comparison-labels">
+                                <span class="label-left">Input</span>
+                                <span class="label-center">MoGe-2</span>
+                                <span class="label-right">Ours</span>
+                            </div>
+                        </div>
+                        <div class="comparison-tile">
+                            <div class="comparison-triple-container" data-min-gap="10">
+                                <img src="assets/images/results/comparison1_input.png" alt="Input" class="img-input">
+                                <img src="assets/images/results/comparison1_baseline_e2e.png" alt="E2E-FT" class="img-baseline">
+                                <img src="assets/images/results/comparison1_ours.png" alt="Ours" class="img-ours">
+                                <div class="slider-handle slider-handle-left">
+                                    <div class="handle-line"></div>
+                                    <div class="handle-circle">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div class="handle-line"></div>
+                                </div>
+                                <div class="slider-handle slider-handle-right">
+                                    <div class="handle-line"></div>
+                                    <div class="handle-circle">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div class="handle-line"></div>
+                                </div>
+                            </div>
+                            <div class="comparison-labels">
+                                <span class="label-left">Input</span>
+                                <span class="label-center">E2E-FT</span>
+                                <span class="label-right">Ours</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dataset Section -->
+    <section id="dataset" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">TransNormal-Synthetic Dataset</h2>
+
+            <div class="dataset-overview">
+                <div class="dataset-image">
+                    <img src="assets/images/dataset_comprehensive.png" alt="TransNormal-Synthetic Dataset Overview">
+                </div>
+
+                <div class="dataset-info">
+                    <p class="dataset-desc">
+                        We introduce <strong>TransNormal-Synthetic</strong>, a physics-based dataset with high-fidelity normal maps for transparent labware. The dataset features diverse laboratory objects rendered with physically accurate materials and lighting.
+                    </p>
+
+                    <div class="dataset-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">Multi-Annotations</span>
+                            <span class="stat-label">Normal, Depth, Foreground Mask, Transparent Mask, HDRI</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">50+ Objects</span>
+                            <span class="stat-label">Test Tubes, Beakers, Conical Flasks, ...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">High-Fidelity</span>
+                            <span class="stat-label">Physics-based Rendering</span>
+                        </div>
+                    </div>
+
+                    <a href="#" class="btn btn-secondary disabled">
+                        <i class="fas fa-download"></i> Download Dataset <span class="badge">Coming Soon</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="dataset-gallery">
+                <img src="assets/images/dataset_scene_gallery.png" alt="Dataset Scene Gallery">
+            </div>
+        </div>
+    </section>
+
+    <!-- Citation Section -->
+    <section id="citation" class="section">
+        <div class="container">
+            <h2 class="section-title">Citation</h2>
+            <p class="citation-intro">If you find our work useful, please consider citing:</p>
+
+            <div class="bibtex-container">
+                <pre class="bibtex-code"><code>
+                    <!-- @article{li2025transnormal,
+  title={TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation},
+  author={Li, Mingwei and Fan, Hehe and Yang, Yi},
+  journal={arXiv preprint},
+  year={2025}
+    } -->
+</code></pre>
+                <button class="copy-btn" onclick="copyBibtex()">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>TransNormal &copy; 2025 | Zhejiang University</p>
+                <p class="footer-note">Website template inspired by academic project pages.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>
