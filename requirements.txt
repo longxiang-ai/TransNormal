@@ -1,0 +1,23 @@
+# TransNormal Dependencies
+# Install with: pip install -r requirements.txt
+
+# PyTorch (install with CUDA support for GPU inference)
+# Visit https://pytorch.org for installation instructions
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Diffusers and Transformers
+diffusers>=0.28.0
+transformers>=4.56.0  # DINOv3 HuggingFace support requires 4.56.0+
+accelerate>=0.24.0
+safetensors>=0.4.0
+
+# Image processing
+Pillow>=9.0.0
+numpy>=1.23.0
+
+# Utilities
+tqdm>=4.65.0
+
+# Web UI (optional)
+gradio>=4.0.0
