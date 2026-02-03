@@ -294,6 +294,34 @@ a:hover {
     font-weight: 600;
 }
 
+.corresponding-icon {
+    margin-left: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.corresponding i {
+    font-size: 0.7rem;
+    margin-right: 4px;
+}
+
+.venue-badge {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.venue-badge span {
+    background: rgba(100, 116, 139, 0.08);
+    color: #64748b;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
 /* Buttons */
 .hero-buttons {
     display: flex;
