@@ -1,6 +1,7 @@
 # TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation
 
-[![arXiv](https://img.shields.io/badge/arXiv-Coming%20Soon-b31b1b.svg)](https://longxiang-ai.github.io/TransNormal/)
+<a href="#"><img src="https://visitor-badge.laobi.icu/badge?page_id=longxiang-ai.TransNormal" alt="Visitors"></a>
+[![arXiv](https://img.shields.io/badge/arXiv-2602.00839-b31b1b.svg)](https://arxiv.org/abs/2602.00839)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue)](https://longxiang-ai.github.io/TransNormal/)
 [![GitHub](https://img.shields.io/badge/Code-GitHub-yellowgreen)](https://github.com/longxiang-ai/TransNormal)
 [![Data](https://img.shields.io/badge/Data-Coming%20Soon-yellowgreen)](https://longxiang-ai.github.io/TransNormal/)
@@ -13,6 +14,7 @@ Official implementation for the paper: **TransNormal: Dense Visual Semantics for
 
 ## News
 
+* **[2026-02-03]**: arXiv paper released. [[arXiv](https://arxiv.org/abs/2602.00839)]
 * **[2026-01-30]**: Project page updated. Code and dataset will be released soon.
 
 ## Teaser
@@ -179,11 +181,14 @@ We introduce **TransNormal-Synthetic**, a physics-based dataset of transparent l
 If you find our work useful, please consider citing:
 
 ```bibtex
-@article{transnormal2025,
-  title={TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation},
-  author={Li, Mingwei and Fan, Hehe and Yang, Yi},
-  journal={arXiv preprint},
-  year={2025}
+@misc{li2026transnormal,
+      title={TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation}, 
+      author={Mingwei Li and Hehe Fan and Yi Yang},
+      year={2026},
+      eprint={2602.00839},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2602.00839}, 
 }
 ```
 
