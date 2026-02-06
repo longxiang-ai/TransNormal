@@ -4,7 +4,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2602.00839-b31b1b.svg)](https://arxiv.org/abs/2602.00839)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue)](https://longxiang-ai.github.io/TransNormal/)
 [![GitHub](https://img.shields.io/badge/Code-GitHub-yellowgreen)](https://github.com/longxiang-ai/TransNormal)
-[![Data](https://img.shields.io/badge/Data-Coming%20Soon-yellowgreen)](https://longxiang-ai.github.io/TransNormal/)
+[![Data](https://img.shields.io/badge/Data-HuggingFace-yellow)](https://huggingface.co/datasets/Longxiang-ai/TransNormal-Synthetic)
 
 Official implementation for the paper: **TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation**.
 
@@ -14,6 +14,7 @@ Official implementation for the paper: **TransNormal: Dense Visual Semantics for
 
 ## News
 
+* **[2026-02-06]**: TransNormal-Synthetic dataset released on HuggingFace. [[Dataset](https://huggingface.co/datasets/Longxiang-ai/TransNormal-Synthetic)]
 * **[2026-02-03]**: arXiv paper released. [[arXiv](https://arxiv.org/abs/2602.00839)]
 * **[2026-01-30]**: Project page updated. Code and dataset will be released soon.
 
@@ -174,7 +175,34 @@ Benchmark results on a single GPU (averaged over multiple runs):
 
 ## Dataset
 
-We introduce **TransNormal-Synthetic**, a physics-based dataset of transparent labware with rich annotations. Dataset release and download links will be provided soon.
+We introduce **TransNormal-Synthetic**, a physics-based dataset of transparent labware with rich annotations.
+
+**Download:** [HuggingFace](https://huggingface.co/datasets/Longxiang-ai/TransNormal-Synthetic)
+
+| Property | Value |
+|----------|-------|
+| Total views | 4,000 |
+| Scenes | 10 |
+| Image resolution | 800 x 800 |
+| Format | WebDataset (.tar shards) |
+| Total size | ~7.5 GB |
+| License | CC BY-NC 4.0 |
+
+Each sample contains paired RGB images (with/without transparent objects), surface normal maps, depth maps, object masks (all / transparent-only), material-changed RGB, and camera metadata (intrinsics).
+
+```python
+import webdataset as wds
+
+dataset = wds.WebDataset(
+    "hf://datasets/Longxiang-ai/TransNormal-Synthetic/transnormal-{000000..000007}.tar"
+).decode("pil")
+
+for sample in dataset:
+    rgb = sample["with_rgb.png"]
+    normal = sample["with_normal.png"]
+    mask = sample["with_mask_transparent.png"]
+    break
+```
 
 ## Citation
 
