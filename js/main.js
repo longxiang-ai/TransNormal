@@ -2,13 +2,41 @@
  * TransNormal Project Page - Interactive Features
  */
 
+// Apply saved theme immediately to prevent flash
+(function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all interactive components
+    initThemeToggle();
     initNavbarScroll();
     initSmoothScroll();
     initComparisonSliders();
     initCopyBibtex();
+    initScrollAnimations();
+    initSectionFadeIn();
 });
+
+/**
+ * Theme toggle with localStorage persistence
+ */
+function initThemeToggle() {
+    const toggle = document.getElementById('themeToggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    });
+}
 
 /**
  * Navbar scroll effect - add background on scroll
@@ -18,18 +46,24 @@ function initNavbarScroll() {
     if (!navbar) return;
 
     let lastScroll = 0;
+    let ticking = false;
 
     window.addEventListener('scroll', function() {
-        const currentScroll = window.pageYOffset;
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                const currentScroll = window.pageYOffset;
 
-        // Add shadow on scroll
-        if (currentScroll > 10) {
-            navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-        } else {
-            navbar.style.boxShadow = 'none';
+                if (currentScroll > 10) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+
+                lastScroll = currentScroll;
+                ticking = false;
+            });
+            ticking = true;
         }
-
-        lastScroll = currentScroll;
     });
 }
 
@@ -318,9 +352,33 @@ function initScrollAnimations() {
             rootMargin: '0px 0px -50px 0px'
         });
 
-        document.querySelectorAll('.method-card, .highlight-item, .stat-item').forEach(el => {
+        document.querySelectorAll('.method-card, .highlight-card, .highlight-item, .stat-item, .comparison-tile').forEach(el => {
             el.classList.add('animate-on-scroll');
             animateObserver.observe(el);
+        });
+    }
+}
+
+/**
+ * Fade in sections on scroll
+ */
+function initSectionFadeIn() {
+    if ('IntersectionObserver' in window) {
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    sectionObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.05,
+            rootMargin: '0px 0px -60px 0px'
+        });
+
+        document.querySelectorAll('.section-title, .abstract-content, .pipeline-image, .results-table-wrapper, .qualitative-section, .dataset-overview, .dataset-gallery, .bibtex-container').forEach(el => {
+            el.classList.add('fade-in-section');
+            sectionObserver.observe(el);
         });
     }
 }
