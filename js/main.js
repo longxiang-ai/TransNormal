@@ -2,16 +2,6 @@
  * TransNormal Project Page - Interactive Features
  */
 
-// Apply saved theme immediately to prevent flash
-(function() {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-    }
-})();
-
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all interactive components
     initThemeToggle();

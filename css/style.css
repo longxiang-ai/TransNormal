@@ -286,17 +286,20 @@
 .theme-toggle-thumb .icon-sun,
 .theme-toggle-thumb .icon-moon {
     position: absolute;
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
     transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .theme-toggle-thumb .icon-sun {
-    color: #F59E0B;
+    stroke: #F59E0B;
     opacity: 1;
     transform: rotate(0deg) scale(1);
 }
 
 .theme-toggle-thumb .icon-moon {
-    color: #818CF8;
+    stroke: #818CF8;
     opacity: 0;
     transform: rotate(-90deg) scale(0.5);
 }
@@ -323,11 +326,29 @@
     transform: rotate(0deg) scale(1);
 }
 
-/* Transition for entire page */
-[data-theme],
-[data-theme] *,
-[data-theme] *::before,
-[data-theme] *::after {
+/* Smooth dark mode transitions on key elements */
+body,
+.navbar,
+.hero,
+.section,
+.section-alt,
+.method-card,
+.highlight-card,
+.stat-item,
+.results-table,
+.results-table th,
+.results-table td,
+.bibtex-code,
+.copy-btn,
+.btn,
+.footer,
+.abstract-content p,
+.method-card h3,
+.method-card p,
+.section-title,
+.subsection-title,
+.table-desc,
+.citation-intro {
     transition: background-color 0.4s ease,
                 color 0.3s ease,
                 border-color 0.3s ease,
