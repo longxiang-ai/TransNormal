@@ -1,9 +1,11 @@
 # TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation
 
 <a href="#"><img src="https://visitor-badge.laobi.icu/badge?page_id=longxiang-ai.TransNormal" alt="Visitors"></a>
+[![ICML 2026](https://img.shields.io/badge/ICML-2026-4b6bff.svg)](https://icml.cc/)
 [![arXiv](https://img.shields.io/badge/arXiv-2602.00839-b31b1b.svg)](https://arxiv.org/abs/2602.00839)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue)](https://longxiang-ai.github.io/TransNormal/)
 [![GitHub](https://img.shields.io/badge/Code-GitHub-yellowgreen)](https://github.com/longxiang-ai/TransNormal)
+[![Model](https://img.shields.io/badge/Model-HuggingFace-orange)](https://huggingface.co/Longxiang-ai/TransNormal)
 [![Data](https://img.shields.io/badge/Data-HuggingFace-yellow)](https://huggingface.co/datasets/Longxiang-ai/TransNormal-Synthetic)
 
 Official implementation for the paper: **TransNormal: Dense Visual Semantics for Diffusion-based Transparent Object Normal Estimation**.
@@ -12,11 +14,26 @@ Official implementation for the paper: **TransNormal: Dense Visual Semantics for
 
 *<sup>1</sup>Zhejiang University, <sup>2</sup>Zhongguancun Academy*
 
+## TL;DR
+
+- RGB-only surface normal estimation for transparent objects.
+- Dense DINOv3 visual semantics injected into a diffusion geometry prior.
+- State-of-the-art results on ClearGrasp and ClearPose.
+- Inference code, model weights, and TransNormal-Synthetic dataset are released.
+
 ## News
 
+* **[2026-05-01]**: TransNormal has been accepted to **ICML 2026**!
 * **[2026-02-06]**: TransNormal-Synthetic dataset released on HuggingFace. [[Dataset](https://huggingface.co/datasets/Longxiang-ai/TransNormal-Synthetic)]
 * **[2026-02-03]**: arXiv paper released. [[arXiv](https://arxiv.org/abs/2602.00839)]
-* **[2026-01-30]**: Project page updated. Code and dataset will be released soon.
+* **[2026-01-30]**: Project page launched.
+
+## TODO
+
+- [x] Release inference code.
+- [x] Release model weights.
+- [x] Release TransNormal-Synthetic dataset.
+- [ ] Release training code.
 
 ## Teaser
 
@@ -126,7 +143,7 @@ python inference.py \
     --output normal.png \
     --model_path ./weights/transnormal \
     --dino_path ./weights/dinov3_vith16plus \
-    --projector_path ./weights/cross_attention_projector.pt
+    --projector_path ./weights/transnormal/cross_attention_projector.pt
 ```
 
 **Batch Processing:**
