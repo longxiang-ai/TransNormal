@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from transnormal import TransNormalPipeline, create_dino_encoder, normal_to_rgb
 
-# ============== 配置路径 ==============
+# Configuration paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 WEIGHTS_DIR = os.path.join(BASE_DIR, "weights")
 

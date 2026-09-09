@@ -1,0 +1,8 @@
+{
+  "cleargrasp": {"root": "data/cleargrasp_eval"},
+  "transnormal": {"root": "data/transnormal", "index": null},
+  "clearpose": {"root": "data/clearpose_eval"},
+  "nyuv2": {"root": "data/dsine_eval/nyuv2"},
+  "scannet": {"root": "data/dsine_eval/scannet"},
+  "ibims": {"root": "data/dsine_eval/ibims"}
+}

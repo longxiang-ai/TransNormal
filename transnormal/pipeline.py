@@ -200,6 +200,7 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
         image: Union[torch.Tensor, Image.Image, np.ndarray, str],
         device: torch.device,
         dtype: torch.dtype,
+        input_is_normalized: bool = False,
     ) -> torch.Tensor:
         """
         Preprocess input image to tensor format.
@@ -208,10 +209,13 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
             image: Input image (PIL, numpy, tensor, or path)
             device: Target device
             dtype: Target dtype
+            input_is_normalized: Skip range inference for an already normalized tensor
         
         Returns:
             Preprocessed image tensor, shape (1, 3, H, W), range [-1, 1]
         """
+        if input_is_normalized and not isinstance(image, torch.Tensor):
+            raise TypeError("input_is_normalized requires a normalized torch.Tensor")
         # Load image if path is provided
         if isinstance(image, str):
             image = Image.open(image).convert("RGB")
@@ -240,7 +244,7 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
             image = image.unsqueeze(0)
         
         # Normalize to [-1, 1]
-        if image.min() >= 0 and image.max() <= 1:
+        if not input_is_normalized and image.min() >= 0 and image.max() <= 1:
             image = image * 2.0 - 1.0
         
         return image.to(device=device, dtype=dtype)
@@ -250,12 +254,13 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
         self,
         image: Union[torch.Tensor, Image.Image, np.ndarray, str],
         prompt: str = "",
-        timestep: int = 1,
+        timestep: int = 999,
         processing_res: Optional[int] = None,
         match_input_res: bool = True,
         resample_method: str = "bilinear",
         output_type: str = "np",
         return_dict: bool = False,
+        input_is_normalized: bool = False,
         **kwargs,
     ):
         """
@@ -264,18 +269,19 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
         Args:
             image: Input RGB image (PIL, numpy, tensor, or file path)
             prompt: Text prompt (optional, used only if DINO encoder is not available)
-            timestep: Diffusion timestep for deterministic prediction (default: 1)
+            timestep: Diffusion timestep for deterministic prediction (default: 999)
             processing_res: Processing resolution (default: 768)
             match_input_res: Whether to resize output to match input resolution
             resample_method: Resampling method for resizing
             output_type: Output format - "np" (numpy), "pt" (tensor), or "pil" (PIL Image)
             return_dict: Whether to return a dict with additional info
+            input_is_normalized: Input tensor already uses the model's normalized RGB range
         
         Returns:
             Normal map in specified format. Normal vectors are in camera coordinates:
-            - X: right (positive = right)
-            - Y: down (positive = down)  
-            - Z: forward (positive = into screen)
+            - X: left (positive = left)
+            - Y: up (positive = up)
+            - Z: outward (positive = toward the viewer)
             
             Output range is [0, 1] where 0.5 represents zero in each axis.
         """
@@ -285,9 +291,10 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
         
         device = self._execution_device
         dtype = self.unet.dtype if self.unet is not None else torch.float32
+        input_dtype = torch.float32 if torch.is_autocast_enabled() else dtype
         
         # Preprocess input image
-        rgb_in = self.preprocess_image(image, device, dtype)
+        rgb_in = self.preprocess_image(image, device, input_dtype, input_is_normalized=input_is_normalized)
         input_size = rgb_in.shape[-2:]
         
         # Resize to processing resolution
@@ -314,7 +321,7 @@ class TransNormalPipeline(DiffusionPipeline, StableDiffusionMixin):
         rgb_latents = rgb_latents * self.vae.config.scaling_factor
         
         # Task embedding for normal estimation
-        task_emb = torch.tensor([1, 0], dtype=dtype, device=device).unsqueeze(0)
+        task_emb = torch.tensor([1, 0], dtype=input_dtype, device=device).unsqueeze(0)
         task_emb = torch.cat([torch.sin(task_emb), torch.cos(task_emb)], dim=-1)
         
         # Single-step deterministic prediction

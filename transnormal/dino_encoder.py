@@ -135,7 +135,13 @@ class DINOv3Encoder(nn.Module):
         
         return pixel_values
     
-    def load_dino_model(self, device: torch.device = None, dtype: torch.dtype = None):
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if self.freeze_encoder and self.dino_backbone is not None:
+            self.dino_backbone.eval()
+        return self
+
+    def load_dino_model(self, device: torch.device = None, dtype: torch.dtype = None, **load_kwargs):
         """
         Load the DINOv3 model from HuggingFace format.
         
@@ -156,6 +162,7 @@ class DINOv3Encoder(nn.Module):
             self.dino_backbone = AutoModel.from_pretrained(
                 self.weights_path,
                 trust_remote_code=True,
+                **load_kwargs,
             )
             
             # Update config from loaded model

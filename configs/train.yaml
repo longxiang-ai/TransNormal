@@ -1,0 +1,33 @@
+model:
+  initial_model: jingheya/lotus-normal-d-v1-1
+  initial_revision: 1d4d52149432060efabb0827e0a9fe4a0b63e817
+  dino_model: facebook/dinov3-vith16plus-pretrain-lvd1689m
+  dino_revision: c807c9eeea853df70aec4069e6f56b28ddc82acc
+  local_files_only: false
+  vae_model: null
+data:
+  cleargrasp: data/index/cleargrasp.jsonl
+  transnormal: data/index/transnormal.jsonl
+  hypersim: data/index/hypersim.jsonl
+  vkitti: data/index/vkitti.jsonl
+  probabilities: [0.35, 0.15, 0.45, 0.05]
+  resolutions: [576, 400, 576, 352]
+  random_flip: true
+training:
+  output_dir: outputs/transnormal
+  seed: 42
+  timestep: 999
+  max_steps: 15000
+  batch_size: 4
+  workers: 4
+  learning_rate: 0.00003
+  projector_learning_rate: 0.0003
+  warmup_steps: 300
+  adam_betas: [0.9, 0.999]
+  weight_decay: 0.01
+  adam_epsilon: 0.00000001
+  max_grad_norm: 1.0
+  wavelet_weight: 0.1
+  mixed_precision: bf16
+  checkpoint_every: 500
+  gradient_checkpointing: false

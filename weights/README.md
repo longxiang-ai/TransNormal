@@ -17,7 +17,7 @@ git lfs install
 git clone https://huggingface.co/Longxiang-ai/TransNormal ./weights/transnormal
 
 # Option 2: Using huggingface_hub
-python -c "from huggingface_hub import snapshot_download; snapshot_download('Longxiang-ai/TransNormal', local_dir='./weights/transnormal')"
+python -c "from huggingface_hub import snapshot_download; snapshot_download('Longxiang-ai/TransNormal', revision='796f97ad3d82ea2e455bed88afe3c33aca8e115f', local_dir='./weights/transnormal')"
 ```
 
 ### 2. DINOv3 Pretrained Weights
